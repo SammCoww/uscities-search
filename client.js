@@ -5,25 +5,14 @@
  * ===============================================================================
  */
 
-// UI DOM references
-var searchBtnElm = document.getElementById('search-button');
-if(!searchBtnElm) {
-    console.log("Error in getting 'send-button' button");
-}
-searchBtnElm.addEventListener('click', ()=>{
-    search();
-    searchInput.value = ''; // clear the field after an explicit Enter search
-});
-
 var searchInput = document.getElementById('search-input');
 if(!searchInput) {
     console.log('Error in getting "search-input" input');
 }
-searchInput.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
+var searchBtnElm = document.getElementById('search-button');
+searchBtnElm.addEventListener('click', function() {
     search();
-    searchInput.value = ''; // clear the field after an explicit Enter search
-  }
+    searchInput.value = '';
 });
 
 const BASE_URL = "https://sammcoww-uscities-microservices-cqedf7g6g5azgtd5.canadacentral-01.azurewebsites.net";
@@ -43,7 +32,7 @@ async function search() {
         displaySearch(data);
    } catch (err) {
         console.log(`Debug>search error: ${err.message}`);
-        responses.textContent = 'Error: could not load results.'; // AC4/AC11
+        responsesElm.textContent = 'Error: could not load results.'; // AC4/AC11
     }
 }
 var responsesElm = document.getElementById('responses');
@@ -52,31 +41,13 @@ function displaySearch(data) {
     console.log('Error in getting "responses"');
     return;
   }
-  // AC1/AC2: matches found — this version only shows the raw JSON text
-  // AC3: no matches — explicit message instead of a blank/empty display
-  //responsesElm.textContent = data.length === 0 ? 'No cities found' : JSON.stringify(data, null, 2);
   responsesElm.innerHTML = json2htmllist(data);
 }
 // Requires DOMPurify: https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.4.11/purify.min.js
 // AC9/AC10: sanitize every field before it is rendered as HTML
 function data_sanitize(v) {
-    return DOMPurify.sanitize(typeof v === 'string' ? v : '');
+    return DOMPurify.sanitize(typeof v === 'string' ? v : JSON.stringify(v ?? ''));
 }
-function json2htmltable(data) {
-    if (!Array.isArray(data) || data.length === 0) return "No cities found"; // AC10/AC11
-    var rows = data.map(function (c) {
-        return "<tr><td>" + data_sanitize(c.city) + "</td><td>" + data_sanitize(c.state_name) +
-               "</td><td>" + data_sanitize(c.zips) + "</td></tr>";
-    }).join('');
-    return "<table><tr><th>City</th><th>State</th><th>Zips</th></tr>" + rows + "</table>";
-}
-// Instant Ajax Request — fires on every keyup, not just Enter
-/*searchInput.addEventListener('keyup', function (event) {
-    search();
-    if (event.key === 'Enter') 
-        searchInput.value = ''; // clear the field after an explicit Enter search
-});*/
-
 // Instant Ajax Request — at least 2 characters before suggesting and debounce ~300ms after the last keystroke
 var debounceTimer = null;
 searchInput.addEventListener('keyup', function (event) {
@@ -100,6 +71,3 @@ function json2htmllist(data) {
     }).join('');
     return '<ul class="city-list">' + items + '</ul>';
 }
-/* Add to styles.css for the "fancy" card look:
-
-*/
