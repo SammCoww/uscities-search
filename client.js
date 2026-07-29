@@ -26,7 +26,7 @@ searchInput.addEventListener('keypress', function(e) {
   }
 });
 
-const BASE_URL = "https://phungph-uscities-microservices.azurewebsites.net";
+const BASE_URL = "https://sammcoww-uscities-microservices-cqedf7g6g5azgtd5.canadacentral-01.azurewebsites.net/";
 async function search() {
     const query = searchInput.value.trim();
     if (!query || query.length === 0) return; // AC9: empty/whitespace-only queries never reach fetch()
